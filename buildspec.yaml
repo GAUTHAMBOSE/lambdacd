@@ -1,0 +1,60 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+  pre_build:
+    commands:
+      - echo "Installing dependencies..."
+      - pip install -r requirements.txt -t lib
+  build:
+    commands:
+    - echo "Zipping deployment package..."
+    - cd lib
+    - zip -r9 ../deployment-package.zip .
+    - cd ..
+    - zip -g deployment_package.zip lambda_function.py
+  post_build:
+    commands:
+      - echo "Uploading lambda Function..."
+      - aws lambda update-function-code --function-name lambda --zip-file fileb://deployment-package.zip
+      - echo "Done!!"
+
+### lambda function name : lambda
+
+
+
+
+
+
+
+
+
+#############################################sample ecs##################################
+# version: 0.2
+# phases:
+#   install:
+#     runtime-versions:
+#       python: 3.7
+#   pre_build:
+#     commands:
+#       - echo Logging in to Amazon ECR...
+#       - aws --version
+#       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+#       - REPOSITORY_URI=123456789012.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my-repository
+#       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+#       - IMAGE_TAG=${COMMIT_HASH:=latest}
+#   build:
+#     commands:
+#       - echo Build started on `date`
+#       - echo Building the Docker image...
+#       - docker build -t $REPOSITORY_URI:latest .
+#       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+#   post_build:
+#     commands:
+#       - echo Build completed on `date`
+#       - echo Pushing the Docker images...
+#       - docker push $REPOSITORY_URI:latest
+#       - docker push $REPOSITORY_URI:$IMAGE_TAG
+#       - echo Writing image definitions file...
+#       - printf '[{"name":"my-repository","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
