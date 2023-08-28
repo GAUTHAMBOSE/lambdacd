@@ -3,11 +3,11 @@ phases:
   install:
     runtime-versions:
       python: 3.8
-  # pre_build:
+  pre_build:
     commands:
       - echo "Installing dependencies..."
-      # - pip install -r requirements.txt -t lib
-      - pip install -r requirements.txt -t lib -vvv || echo "Installation failed!"
+      - pip install -r requirements.txt -t lib
+      # - pip install -r requirements.txt -t lib -vvv || echo "Installation failed!"
 
   build:
     commands:
